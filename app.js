@@ -4,6 +4,9 @@ const generateBtn = document.querySelector(".generate");
 const sliders = document.querySelectorAll('input[type="range"]');
 const currentHexValues = document.querySelectorAll(".color h2");
 const copyContainer = document.querySelector(".copy-container");
+const adjustButton = document.querySelectorAll(".adjust");
+const closeAdjustbutton = document.querySelectorAll(".close-adjustment");
+const sliderContainers = document.querySelectorAll(".sliders");
 
 // Initial colors when generated - This prevents us from losing our original value when messing with the brightness
 let initialColors;
@@ -155,6 +158,13 @@ function copyToClipboard(hex) {
   popupBox.classList.add("active");
 }
 
+function openAdjustmentsPanel(index) {
+  sliderContainers[index].classList.toggle("active");
+}
+function closeAdjustmentsPanel(index) {
+  sliderContainers[index].classList.remove("active");
+}
+
 // ====> Event Listeners <====
 generateBtn.addEventListener("click", function () {
   randomColors();
@@ -170,7 +180,7 @@ colorDivs.forEach((slider, index) => {
   });
 });
 
-currentHexValues.forEach((hex, index) => {
+currentHexValues.forEach((hex) => {
   hex.addEventListener("click", () => {
     copyToClipboard(hex);
   });
@@ -180,4 +190,16 @@ copyContainer.addEventListener("transitionend", () => {
   const popupBox = copyContainer.children[0];
   popupBox.classList.remove("active");
   copyContainer.classList.remove("active");
+});
+
+adjustButton.forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    openAdjustmentsPanel(index);
+  });
+});
+
+closeAdjustbutton.forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    closeAdjustmentsPanel(index);
+  });
 });
