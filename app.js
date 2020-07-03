@@ -7,6 +7,7 @@ const copyContainer = document.querySelector(".copy-container");
 const adjustButton = document.querySelectorAll(".adjust");
 const closeAdjustbutton = document.querySelectorAll(".close-adjustment");
 const sliderContainers = document.querySelectorAll(".sliders");
+const lockButton = document.querySelectorAll(".lock");
 
 // Initial colors when generated - This prevents us from losing our original value when messing with the brightness
 let initialColors;
@@ -23,13 +24,19 @@ function randomColors() {
   colorDivs.forEach((div, i) => {
     const hexText = div.children[0];
     const randomHex = generateHex();
-    hexText.innerText = randomHex;
 
-    // Add color to initialColors array
-    initialColors.push(chroma(randomHex).hex());
+    // Check for locked colors
+    if (div.classList.contains("locked")) {
+      initialColors.push(hexText.innerText);
+      return;
+    } else {
+      // Add color to initialColors array
+      initialColors.push(chroma(randomHex).hex());
+    }
 
-    // Add color to background
+    // Add color to background & update the hex text
     div.style.backgroundColor = randomHex;
+    hexText.innerText = randomHex;
 
     // Check text contrast
     checkTextContrast(randomHex, hexText);
@@ -46,6 +53,12 @@ function randomColors() {
 
   // Reset Inputs
   resetInputs();
+
+  // Check lock & slider control button contrast
+  adjustButton.forEach((btn, idx) => {
+    checkTextContrast(initialColors[idx], btn);
+    checkTextContrast(initialColors[idx], lockButton[idx]);
+  });
 }
 
 function checkTextContrast(color, text) {
@@ -161,8 +174,17 @@ function copyToClipboard(hex) {
 function openAdjustmentsPanel(index) {
   sliderContainers[index].classList.toggle("active");
 }
+
 function closeAdjustmentsPanel(index) {
   sliderContainers[index].classList.remove("active");
+}
+
+function lockColor(index) {
+  // Toggle locked class on the color div
+  colorDivs[index].classList.toggle("locked");
+  // Toggle lock button open/closed
+  lockButton[index].children[0].classList.toggle("fa-lock-open");
+  lockButton[index].children[0].classList.toggle("fa-lock");
 }
 
 // ====> Event Listeners <====
@@ -201,5 +223,11 @@ adjustButton.forEach((btn, index) => {
 closeAdjustbutton.forEach((btn, index) => {
   btn.addEventListener("click", () => {
     closeAdjustmentsPanel(index);
+  });
+});
+
+lockButton.forEach((btn, idx) => {
+  btn.addEventListener("click", () => {
+    lockColor(idx);
   });
 });
